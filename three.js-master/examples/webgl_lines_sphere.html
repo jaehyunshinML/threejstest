@@ -1,177 +1,182 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<title>three.js webgl - lines - spheres</title>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-		<link type="text/css" rel="stylesheet" href="main.css">
-	</head>
-	<body>
 
-		<div id="info">
-			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - lines WebGL demo
-		</div>
+<head>
+	<title>three.js webgl - lines - spheres</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<link type="text/css" rel="stylesheet" href="main.css">
+</head>
 
-		<script type="module">
+<body>
 
-			import * as THREE from '../build/three.module.js';
+	<div id="info">
+		<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - lines WebGL demo
+	</div>
 
-			const SCREEN_WIDTH = window.innerWidth,
-				SCREEN_HEIGHT = window.innerHeight,
+	<script type="module">
 
-				r = 450;
+		import * as THREE from '../build/three.module.js';
+		const embeddingArrayX = [0.42824996, 0.75137454, 1., 0.25456905, 0.,
+			0.10925889, 0.42883122, 0.7694277, 0.44735265, 0.04437172]
+		const embeddingArrayY = [0.817876, 1., 0.5567647, 0.94290495, 0.,
+			0.3777802, 0.58262384, 0.66975915, 0.103176, 0.23946667]
+		const embeddingArrayZ = [1., 0.5407734, 0.41828728, 0.4168415, 0.8009367,
+			0.99984264, 0.29957104, 0., 0.721859, 0.45809746]
+		const SCREEN_WIDTH = window.innerWidth,
+			SCREEN_HEIGHT = window.innerHeight,
 
-			let mouseY = 0,
+			r = 450;
 
-				windowHalfY = window.innerHeight / 2,
+		let mouseY = 0,
 
-				camera, scene, renderer;
+			windowHalfY = window.innerHeight / 2,
 
-			init();
-			animate();
+			camera, scene, renderer;
 
-			function init() {
+		init();
+		animate();
 
-				camera = new THREE.PerspectiveCamera( 80, SCREEN_WIDTH / SCREEN_HEIGHT, 1, 3000 );
-				camera.position.z = 1000;
+		function init() {
 
-				scene = new THREE.Scene();
+			camera = new THREE.PerspectiveCamera(80, SCREEN_WIDTH / SCREEN_HEIGHT, 1, 3000);
+			camera.position.z = 1000;
 
-				const parameters = [[ 0.25, 0xff7700, 1 ], [ 0.5, 0xff9900, 1 ], [ 0.75, 0xffaa00, 0.75 ], [ 1, 0xffaa00, 0.5 ], [ 1.25, 0x000833, 0.8 ],
-					[ 3.0, 0xaaaaaa, 0.75 ], [ 3.5, 0xffffff, 0.5 ], [ 4.5, 0xffffff, 0.25 ], [ 5.5, 0xffffff, 0.125 ]];
+			scene = new THREE.Scene();
 
-				const geometry = createGeometry();
+			const parameters = [[0.25, 0xff7700, 1], [0.5, 0xff9900, 1], [0.75, 0xffaa00, 0.75], [1, 0xffaa00, 0.5], [1.25, 0x000833, 0.8],
+			[3.0, 0xaaaaaa, 0.75], [3.5, 0xffffff, 0.5], [4.5, 0xffffff, 0.25], [5.5, 0xffffff, 0.125]];
 
-				for ( let i = 0; i < parameters.length; ++ i ) {
+			const geometry = createGeometry();
 
-					const p = parameters[ i ];
+			for (let i = 0; i < parameters.length; ++i) {
 
-					const material = new THREE.LineBasicMaterial( { color: p[ 1 ], opacity: p[ 2 ] } );
+				const p = parameters[i];
 
-					const line = new THREE.LineSegments( geometry, material );
-					line.scale.x = line.scale.y = line.scale.z = p[ 0 ];
-					line.userData.originalScale = p[ 0 ];
-					line.rotation.y = Math.random() * Math.PI;
-					line.updateMatrix();
-					scene.add( line );
+				const material = new THREE.LineBasicMaterial({ color: p[1], opacity: p[2] });
 
-				}
-
-				renderer = new THREE.WebGLRenderer( { antialias: true } );
-				renderer.setPixelRatio( window.devicePixelRatio );
-				renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
-				document.body.appendChild( renderer.domElement );
-
-				document.body.style.touchAction = 'none';
-				document.body.addEventListener( 'pointermove', onPointerMove );
-
-				//
-
-				window.addEventListener( 'resize', onWindowResize );
-
-				// test geometry swapability
-
-				setInterval( function () {
-
-					const geometry = createGeometry();
-
-					scene.traverse( function ( object ) {
-
-						if ( object.isLine ) {
-
-							object.geometry.dispose();
-							object.geometry = geometry;
-
-						}
-
-					} );
-
-				}, 1000 );
+				const line = new THREE.LineSegments(geometry, material);
+				line.scale.x = line.scale.y = line.scale.z = p[0];
+				line.userData.originalScale = p[0];
+				line.rotation.y = Math.random() * Math.PI;
+				line.updateMatrix();
+				scene.add(line);
 
 			}
 
-			function createGeometry() {
+			renderer = new THREE.WebGLRenderer({ antialias: true });
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+			document.body.appendChild(renderer.domElement);
 
-				const geometry = new THREE.BufferGeometry();
-				const vertices = [];
-
-				const vertex = new THREE.Vector3();
-
-				for ( let i = 0; i < 1500; i ++ ) {
-
-					vertex.x = Math.random() * 2 - 1;
-					vertex.y = Math.random() * 2 - 1;
-					vertex.z = Math.random() * 2 - 1;
-					vertex.normalize();
-					vertex.multiplyScalar( r );
-
-					vertices.push( vertex.x, vertex.y, vertex.z );
-
-					vertex.multiplyScalar( Math.random() * 0.09 + 1 );
-
-					vertices.push( vertex.x, vertex.y, vertex.z );
-
-				}
-
-				geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-
-				return geometry;
-
-			}
-
-			function onWindowResize() {
-
-				windowHalfY = window.innerHeight / 2;
-
-				camera.aspect = window.innerWidth / window.innerHeight;
-				camera.updateProjectionMatrix();
-
-				renderer.setSize( window.innerWidth, window.innerHeight );
-
-			}
-
-			function onPointerMove( event ) {
-
-				if ( event.isPrimary === false ) return;
-
-				mouseY = event.clientY - windowHalfY;
-
-			}
+			document.body.style.touchAction = 'none';
+			document.body.addEventListener('pointermove', onPointerMove);
 
 			//
 
-			function animate() {
+			window.addEventListener('resize', onWindowResize);
 
-				requestAnimationFrame( animate );
+			// test geometry swapability
 
-				render();
+			setInterval(function () {
+
+				const geometry = createGeometry();
+
+				scene.traverse(function (object) {
+
+					if (object.isLine) {
+
+						object.geometry.dispose();
+						object.geometry = geometry;
+
+					}
+
+				});
+
+			}, 1000);
+
+		}
+
+		function createGeometry() {
+
+			const geometry = new THREE.BufferGeometry();
+			const vertices = [];
+
+			const vertex = new THREE.Vector3();
+
+			for (let i = 0; i < 10; i++) {
+
+				vertex.x = embeddingArrayX[i] * 2 - 1;
+				vertex.y = embeddingArrayY[i] * 2 - 1;
+				vertex.z = embeddingArrayZ[i] * 2 - 1;
+				vertex.normalize();
+				vertex.multiplyScalar(r);
+
+				vertices.push(vertex.x, vertex.y, vertex.z);
+
+				vertex.multiplyScalar(Math.random() * 0.09 + 1);
+
+				vertices.push(vertex.x, vertex.y, vertex.z);
 
 			}
 
-			function render() {
+			geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
 
-				camera.position.y += ( - mouseY + 200 - camera.position.y ) * .05;
-				camera.lookAt( scene.position );
+			return geometry;
 
-				renderer.render( scene, camera );
+		}
 
-				const time = Date.now() * 0.0001;
+		function onWindowResize() {
 
-				for ( let i = 0; i < scene.children.length; i ++ ) {
+			windowHalfY = window.innerHeight / 2;
 
-					const object = scene.children[ i ];
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
 
-					if ( object.isLine ) {
+			renderer.setSize(window.innerWidth, window.innerHeight);
 
-						object.rotation.y = time * ( i < 4 ? ( i + 1 ) : - ( i + 1 ) );
+		}
 
-						if ( i < 5 ) {
+		function onPointerMove(event) {
 
-							const scale = object.userData.originalScale * ( i / 5 + 1 ) * ( 1 + 0.5 * Math.sin( 7 * time ) );
+			if (event.isPrimary === false) return;
 
-							object.scale.x = object.scale.y = object.scale.z = scale;
+			mouseY = event.clientY - windowHalfY;
 
-						}
+		}
+
+		//
+
+		function animate() {
+
+			requestAnimationFrame(animate);
+
+			render();
+
+		}
+
+		function render() {
+
+			camera.position.y += (- mouseY + 200 - camera.position.y) * .05;
+			camera.lookAt(scene.position);
+
+			renderer.render(scene, camera);
+
+			const time = Date.now() * 0.0001;
+
+			for (let i = 0; i < scene.children.length; i++) {
+
+				const object = scene.children[i];
+
+				if (object.isLine) {
+
+					object.rotation.y = time * (i < 4 ? (i + 1) : - (i + 1));
+
+					if (i < 5) {
+
+						const scale = object.userData.originalScale * (i / 5 + 1) * (1 + 0.5 * Math.sin(7 * time));
+
+						object.scale.x = object.scale.y = object.scale.z = scale;
 
 					}
 
@@ -179,7 +184,10 @@
 
 			}
 
+		}
 
-		</script>
-	</body>
+
+	</script>
+</body>
+
 </html>

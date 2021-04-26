@@ -157,9 +157,21 @@
 
 			scene = new THREE.Scene();
 
+			// Objects
+			const geometryTours = new THREE.TorusGeometry(.7, .2, 0.1, 100);
+
+			// Materials
+
+			const materialTours = new THREE.MeshBasicMaterial()
+			materialTours.color = new THREE.Color(0xff0000)
+
+			// Mesh
+			const sphere = new THREE.Mesh(geometryTours, materialTours)
+
 
 			group = new THREE.Group();
 			scene.add(group);
+			group.add(sphere);
 
 			const helper = new THREE.BoxHelper(new THREE.Mesh(new THREE.BoxGeometry(r, r, r)));
 			helper.material.color.setHex(0x101010);
